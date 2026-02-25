@@ -1,2 +1,3 @@
 console.log('hi');
-console.log("HAI!");
+console.log('Привіт???');
+console.log('Good Day');
