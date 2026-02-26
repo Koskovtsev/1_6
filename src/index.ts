@@ -33,7 +33,7 @@ function getAllProductNames(a?: { products?: { name: string }[] }) {
 
 class Pet {
     surname: string;
-   
+
     constructor(name: string) {
         this.surname = name;
     }
@@ -61,13 +61,107 @@ class Dog extends Pet {
     }
 }
 
-function hey(abstractPet: Pet) {
-    return "hey! i'm " + abstractPet.name();
+// function hey(abstractPet: Pet) {
+//     return "hey! i'm " + abstractPet.name();
+// }
+// let a = new Cat("snizhok", true)
+// let b = new Dog("sirko", 333)
+// hey(a)
+// hey(b)
+
+
+function hey(a: { name: Function, type: string, cuteness?: number, coolness?: number }) {
+    return "hey! i'm " + a.name()
+        + (a.type === "cat" ? (" cuteness: " + a.cuteness) : (" coolness: " + a.coolness))
 }
-let a = new Cat("snizhok", true)
-let b = new Dog("sirko", 333)
-hey(a)
-hey(b)
+hey({
+    name: () => "snizhok",
+    type: "cat",
+    cuteness: 100
+})
+hey({
+    name: () => "sirko",
+    type: "dog",
+    coolness: 100
+})
+
+// console.log(hey({
+//     name: () => "snizhok",
+//     type: "cat",
+//     cuteness: 100
+// }));
+// console.log(hey({
+//     name: () => "sirko",
+//     type: "dog",
+//     coolness: 100
+// }));
+
+// google for Record type
+// function stringEntries(a: string[] | Record<string, any>) {
+//     return Array.isArray(a) ? a : Object.keys(a)
+// }
+
+// async function world(a: number) {
+//     return "*".repeat(a)
+// }
+// const hello = async () => {
+//     return await world(10)
+// }
+// hello().then(r => console.log(r)).catch(e => console.log("fail"))
+// console.log(hello());
 
 
-console.log('all is OK!');
+type A = Record<string, undefined | {
+    cvalue: A | number | undefined | string
+}>;
+
+interface BigObject  {
+    [key: string]: { cvalue: number | string | undefined | BigObject  } | undefined;
+}
+
+function handMadeFunc(a: A) {
+    const elementsArray = Object.keys(a);
+    const result: number = elementsArray.reduce((acc, elem) => {
+        const value = a[elem]?.cvalue;
+        switch (typeof value) {
+            case 'undefined': return acc + 2021;
+            case 'number': return acc + value;
+            case 'string': const number = +value;
+                return acc + (Number.isNaN(number) ? 2021 : number);
+            case 'object': return value !== null ? acc + handMadeFunc(value) : acc;
+            default: return acc;
+        }
+    }, 0);
+    return result;
+}
+
+const a = {
+    hello: { cvalue: 1 },
+    world: {
+        cvalue:
+        {
+            yay: { cvalue: "2" },
+            some: { cvalue: 0 }
+        }
+    }
+}
+console.log(handMadeFunc(a));
+
+
+function summ(a: BigObject) {
+    const x = Object.keys(a).map((k) => {
+        const elem = a[k]?.cvalue;
+        if (typeof elem === undefined) return 2021;
+        if (typeof elem === 'string') {
+            const number = +elem;
+            return Number.isNaN(number) ? 2021 : number;
+        }
+        if (typeof elem === 'object') return summ(elem);
+        return elem;
+    });
+    let sum = 0;
+    x.forEach(num => sum += num ?? 0);
+    return sum;
+}
+console.log(summ(a));
+console.log('all is OK!!');
