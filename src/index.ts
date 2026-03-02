@@ -121,7 +121,7 @@ type AObject = Record<string, undefined | {
 function summ(a: AObject) {
     const x = Object.keys(a).map((k) => {
         const elem = a[k]?.cvalue;
-        if (typeof elem === undefined) return 2021;
+        if (typeof elem === 'undefined') return 2021;
         if (typeof elem === 'string') {
             const number = +elem;
             return Number.isNaN(number) ? 2021 : number;
@@ -130,9 +130,7 @@ function summ(a: AObject) {
         return elem;
     });
     let sum = 0;
-    for (let i = 0; i < x.length; i++) {
-        sum += x[i] || 0;
-    }
+    x.forEach(element => sum += element);
     return sum;
 }
 
