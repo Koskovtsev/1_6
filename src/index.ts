@@ -110,18 +110,35 @@ hey({
 // hello().then(r => console.log(r)).catch(e => console.log("fail"))
 // console.log(hello());
 
-
-type A = Record<string, undefined | {
-    cvalue: A | number | undefined | string
-}>;
-
-interface BigObject  {
-    [key: string]: { cvalue: number | string | undefined | BigObject  } | undefined;
+interface BigObject {
+    [key: string]: { cvalue: number | string | undefined | BigObject } | undefined;
 }
 
-function handMadeFunc(a: A) {
-    const elementsArray = Object.keys(a);
-    const result: number = elementsArray.reduce((acc, elem) => {
+type AObject = Record<string, undefined | {
+    cvalue: AObject | number | undefined | string
+}>;
+
+function summ(a: AObject) {
+    const x = Object.keys(a).map((k) => {
+        const elem = a[k]?.cvalue;
+        if (typeof elem === undefined) return 2021;
+        if (typeof elem === 'string') {
+            const number = +elem;
+            return Number.isNaN(number) ? 2021 : number;
+        }
+        if (typeof elem === 'object') return summ(elem);
+        return elem;
+    });
+    let sum = 0;
+    for (let i = 0; i < x.length; i++) {
+        sum += x[i] || 0;
+    }
+    return sum;
+}
+
+
+function handMadeFunc(a: AObject) {
+    const result: number = Object.keys(a).reduce((acc, elem) => {
         const value = a[elem]?.cvalue;
         switch (typeof value) {
             case 'undefined': return acc + 2021;
@@ -134,6 +151,7 @@ function handMadeFunc(a: A) {
     }, 0);
     return result;
 }
+
 
 const a = {
     hello: { cvalue: 1 },
@@ -148,20 +166,5 @@ const a = {
 console.log(handMadeFunc(a));
 
 
-function summ(a: BigObject) {
-    const x = Object.keys(a).map((k) => {
-        const elem = a[k]?.cvalue;
-        if (typeof elem === undefined) return 2021;
-        if (typeof elem === 'string') {
-            const number = +elem;
-            return Number.isNaN(number) ? 2021 : number;
-        }
-        if (typeof elem === 'object') return summ(elem);
-        return elem;
-    });
-    let sum = 0;
-    x.forEach(num => sum += num ?? 0);
-    return sum;
-}
 console.log(summ(a));
 console.log('all is OK!!');
